@@ -26,11 +26,15 @@ CTomographyDlg::CTomographyDlg(CWnd* pParent /*=nullptr*/)
 void CTomographyDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_PICFIRST, pic_first);
+	DDX_Control(pDX, IDC_SLIDER1, slid_angle);
 }
 
 BEGIN_MESSAGE_MAP(CTomographyDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_HSCROLL()
+	ON_BN_CLICKED(IDC_BUTTON1, &CTomographyDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -45,6 +49,7 @@ BOOL CTomographyDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Крупный значок
 	SetIcon(m_hIcon, FALSE);		// Мелкий значок
 
+	slid_angle.SetRange(0, 179);
 	// TODO: добавьте дополнительную инициализацию
 
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления
@@ -86,3 +91,21 @@ HCURSOR CTomographyDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CTomographyDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: добавьте свой код обработчика сообщений или вызов стандартного
+	pic_first.angle_rotate = slid_angle.GetPos();
+	pic_first.Invalidate(FALSE);
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+void CTomographyDlg::OnBnClickedButton1()
+{
+	// TODO: добавьте свой код обработчика уведомлений
+	CFileDialog change_image(TRUE);
+	change_image.DoModal();
+	auto path = change_image.GetPathName();
+	pic_first.LoadImage_(path);
+	pic_first.Invalidate(FALSE);
+}

@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "Drawer.h"
 
 // Диалоговое окно CTomographyDlg
 class CTomographyDlg : public CDialogEx
@@ -30,4 +30,9 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	Drawer pic_first;
+	CSliderCtrl slid_angle;
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnBnClickedButton1();
 };
