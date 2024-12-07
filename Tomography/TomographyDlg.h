@@ -4,6 +4,8 @@
 
 #pragma once
 #include "Drawer.h"
+#include "Model.h"
+#include "MyGraph.h"
 
 // Диалоговое окно CTomographyDlg
 class CTomographyDlg : public CDialogEx
@@ -35,4 +37,15 @@ public:
 	CSliderCtrl slid_angle;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnBnClickedButton1();
+	MyGraph gr_proj;
+	Gdiplus::Color col;
+	Drawer pic_sinogramma;
+	double minAngle;
+	double maxAngle;
+	double stepAngle;
+	sinogramma sinog;
+	afx_msg void OnBnClickedButton2();
+	Drawer pic_restore;
+	afx_msg void OnBnClickedButton3();
+	restore res_restore;
 };

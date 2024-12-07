@@ -6,6 +6,7 @@
 #define my_rect lpDrawItemStruct->rcItem
 #include "Tomography.h"
 #include "Drawer.h"
+#include "Model.h"
 using namespace std;
 using namespace Gdiplus;
 
@@ -20,7 +21,6 @@ Drawer::Drawer()
 	s = GdiplusStartup(&token, &input, NULL);
 	if (s != Ok) MessageBox(L"s != Ok", L"Error!");
 	first_start = true;
-	dec_log = true;
 	is_ampl = false;
 	angle_rotate = 0;
 }
@@ -33,7 +33,6 @@ Drawer::~Drawer()
 
 BEGIN_MESSAGE_MAP(Drawer, CStatic)
 //	ON_WM_DRAWITEM()
-ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -58,17 +57,9 @@ void Drawer::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		return;
 	}
 
-	RotateImage();
-	if (dec_log)
-	{
-		Norma(matr_rotate);
-		InterpolationMatr(res_image, matr_rotate, lpDrawItemStruct->rcItem.right, lpDrawItemStruct->rcItem.bottom);
-	}
-	else
-	{
-		Norma(matr_log);
-		InterpolationMatr(res_image, matr_log, lpDrawItemStruct->rcItem.right, lpDrawItemStruct->rcItem.bottom);
-	}
+	RotateImage(matr, matr_rotate, angle_rotate);
+	Norma(matr_rotate);
+	InterpolationMatr(res_image, matr_rotate, lpDrawItemStruct->rcItem.right, lpDrawItemStruct->rcItem.bottom);
 
 	Graphics wnd(lpDrawItemStruct->hDC);
 	Bitmap buffer(lpDrawItemStruct->rcItem.right, lpDrawItemStruct->rcItem.bottom, &wnd);
@@ -179,15 +170,6 @@ void Drawer::normirovka(double min, double max, vector<vector<double>>& mat)
 	}
 }
 
-
-void Drawer::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	// TODO: добавьте свой код обработчика сообщений или вызов стандартного
-	dec_log = !dec_log;
-	Invalidate(FALSE);
-	CStatic::OnLButtonDown(nFlags, point);
-}
-
 void Drawer::SetMatr(std::vector<std::vector<double>> get_matr, double x, double y, double wid, bool ampl)
 {
 	lx = x; ly = y; width_granica = wid; is_ampl = ampl;
@@ -198,7 +180,7 @@ void Drawer::SetMatr(std::vector<std::vector<double>> get_matr, double x, double
 
 std::vector<std::vector<double>> Drawer::GetMatr()
 {
-	return res_image;
+	return matr;
 }
 
 void Drawer::SetMatrLog()
@@ -230,7 +212,7 @@ void Drawer::SetMatrLog()
 	}
 }
 
-void Drawer::RotateImage()
+void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& matr_rotate, double angle_rotate)
 {
 	if (!matr_rotate.empty())
 		matr_rotate.clear();
@@ -239,30 +221,18 @@ void Drawer::RotateImage()
 	double arg = 0;
 	double my_cos = 0;
 	double my_sin = 0;
-	if (angle_rotate > 90)
-	{
-		arg = (180 - angle_rotate) * M_PI / 180;
-		my_cos = cos(arg);
-		my_sin = sin(arg);
-	}
-	else
-	{
-		arg = angle_rotate * M_PI / 180;
-		my_cos = cos(arg);
-		my_sin = sin(arg);
-	}
-	int new_h = w * my_sin + h * my_cos;
-	int new_w = w * my_cos + h * my_sin;
+	arg = angle_rotate * M_PI / 180;
+	my_cos = cos(arg);
+	my_sin = sin(arg);
+	int new_h = w * abs(my_sin) + h * abs(my_cos);
+	int new_w = w * abs(my_cos) + h * abs(my_sin);
 	double centerX = (double)w / 2;
 	double centerY = (double)h / 2;
 	double xnew = 0;
 	double ynew = 0;
-	int dh = floor((double)(new_h - h) / 2);
-	int dw = floor((double)(new_w - w) / 2);
+	double dh = /*floor*/((double)(new_h - h) / 2);
+	double dw = /*floor*/((double)(new_w - w) / 2);
 	matr_rotate = vector<vector<double>>(new_h, vector<double>(new_w, -1));
-	arg = angle_rotate * M_PI / 180;
-	my_cos = cos(arg);
-	my_sin = sin(arg);
 	for (int i = 0; i < h; i++)
 	{
 		for (int j = 0; j < w; j++)
@@ -294,7 +264,7 @@ void Drawer::RotateImage()
 				*it = 0;
 			else
 				*it = (*(it + 1) + *(it - 1)) / 2;
-			it = find(matr_rotate[v].begin(), matr_rotate[v].end(), -1);
+			it = find(it, matr_rotate[v].end(), -1);
 		}
 	}
 }

@@ -17,7 +17,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	ULONG_PTR token;
-	bool first_start, dec_log;
+	bool first_start;
 	double pWidth, pHeight;
 	double lx, ly, width_granica;
 	bool is_ampl;
@@ -30,12 +30,13 @@ public:
 	void LoadImage_(const wchar_t* path_file);
 	void Norma(std::vector<std::vector<double>>& matrix);
 	void normirovka(double min, double max, std::vector<std::vector<double>>& mat);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+//	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	void SetMatr(std::vector<std::vector<double>> get_matr, double x, double y, double wid, bool ampl);
 	std::vector<std::vector<double>> GetMatr();
 	void SetMatrLog();
 	double angle_rotate;
-	void RotateImage();
 };
+
+void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& res, double angle);
 
 void InterpolationMatr(std::vector<std::vector<double>>& result, std::vector<std::vector<double>> _image, double w, double h);
