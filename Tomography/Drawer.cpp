@@ -23,6 +23,7 @@ Drawer::Drawer()
 	first_start = true;
 	is_ampl = false;
 	angle_rotate = 0;
+	is_angle = false;
 }
 
 Drawer::~Drawer()
@@ -57,7 +58,7 @@ void Drawer::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		return;
 	}
 
-	RotateImage(matr, matr_rotate, angle_rotate);
+	RotateImage(matr, matr_rotate, angle_rotate, is_angle);
 	Norma(matr_rotate);
 	InterpolationMatr(res_image, matr_rotate, lpDrawItemStruct->rcItem.right, lpDrawItemStruct->rcItem.bottom);
 
@@ -212,7 +213,7 @@ void Drawer::SetMatrLog()
 	}
 }
 
-void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& matr_rotate, double angle_rotate)
+void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& matr_rotate, double angle_rotate, bool is_angle)
 {
 	if (!matr_rotate.empty())
 		matr_rotate.clear();
@@ -224,8 +225,20 @@ void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<
 	arg = angle_rotate * M_PI / 180;
 	my_cos = cos(arg);
 	my_sin = sin(arg);
-	int new_h = w * abs(my_sin) + h * abs(my_cos);
-	int new_w = w * abs(my_cos) + h * abs(my_sin);
+	int new_h;
+	int new_w;
+	if (is_angle)
+	{
+		angle_rotate = atan2(w, h);
+		new_h = w * abs(sin(angle_rotate)) + h * abs(cos(angle_rotate));
+		angle_rotate = atan2(h, w);
+		new_w = w * abs(cos(angle_rotate)) + h * abs(sin(angle_rotate));
+	}
+	else
+	{
+		new_h = w * abs(my_sin) + h * abs(my_cos);
+		new_w = w * abs(my_cos) + h * abs(my_sin);
+	}
 	double centerX = (double)w / 2;
 	double centerY = (double)h / 2;
 	double xnew = 0;
@@ -269,13 +282,14 @@ void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<
 	}
 }
 
-void InterpolationMatr(std::vector<std::vector<double>>& result, std::vector<std::vector<double>> _image, double w, double h)
+template<typename T> void InterpolationMatr(std::vector<std::vector<T>>& result, std::vector<std::vector<T>> _image, double w, double h)
 {
-	result = vector<vector<double>>(h, vector<double>(w));
+	result = vector<vector<T>>(h, vector<T>(w));
 
-	double d_x, d_y, im_w = _image[0].size(), im_h = _image.size();
+	double d_x, d_y;
+	double im_w = _image[0].size(), im_h = _image.size();
 	int i_x, i_y;
-	double fR1, fR2;
+	T fR1, fR2;
 
 	double otn_w = (im_w - 1) / (w - 1), otn_h = (im_h - 1) / (h - 1);
 
@@ -291,10 +305,10 @@ void InterpolationMatr(std::vector<std::vector<double>>& result, std::vector<std
 			if (i_y == _image.size() - 1)
 				i_y--;
 
-			fR1 = (i_x + 1. - d_x) * _image[i_y + 1][i_x] + (d_x - i_x) * _image[i_y + 1][i_x + 1];
-			fR2 = (i_x + 1. - d_x) * _image[i_y][i_x] + (d_x - i_x) * _image[i_y][i_x + 1];
+			fR1 = (double)(i_x + 1. - d_x) * _image[i_y + 1][i_x] + (double)(d_x - i_x) * _image[i_y + 1][i_x + 1];
+			fR2 = (double)(i_x + 1. - d_x) * _image[i_y][i_x] + (double)(d_x - i_x) * _image[i_y][i_x + 1];
 
-			result[i][j] = abs(i_y - d_y) * fR1 + abs(d_y - (i_y + 1)) * fR2;
+			result[i][j] = (double)abs(i_y - d_y) * fR1 + (double)abs(d_y - (i_y + 1)) * fR2;
 		}
 	}
 }

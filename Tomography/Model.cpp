@@ -5,7 +5,7 @@ using namespace std;
 
 void GetProjection(std::vector<std::vector<double>> matr, std::vector<double>& proj, double angle)
 {
-	RotateImage(matr, matr, angle);
+	RotateImage(matr, matr, angle, true);
 	InterpolationMatr(matr, matr, w, h);
 	proj.resize(matr.size());
 	for (int i = 0; i < proj.size(); i++)
@@ -123,7 +123,7 @@ void restore::Main(sinogramma my_si)
 		}
 	}
 	spectr[center2D][it_center] = center / (double)num_p;
-
+	//InterpolationMatr(spectr, spectr, spectr[0].size(), spectr.size());
 	fft2D(spectr, false, h, w);
 	result = vector<vector<double>>(h, vector<double>(w));
 	for (int i = 0; i < h / 2; i++)

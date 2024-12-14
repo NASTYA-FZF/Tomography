@@ -62,6 +62,7 @@ BOOL CTomographyDlg::OnInitDialog()
 
 	slid_angle.SetRange(0, 179);
 	col = Gdiplus::Color::Blue;
+	pic_first.is_angle = true;
 	// TODO: добавьте дополнительную инициализацию
 
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления

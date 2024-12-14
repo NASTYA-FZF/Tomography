@@ -7,9 +7,9 @@ typedef std::complex<double> base;
 
 void GetProjection(std::vector<std::vector<double>> matr, std::vector<double>& proj, double angle);
 
-void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& res, double angle);
+void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& res, double angle, bool is_angle);
 
-void InterpolationMatr(std::vector<std::vector<double>>& result, std::vector<std::vector<double>> _image, double w, double h);
+template<typename T> void InterpolationMatr(std::vector<std::vector<T>>& result, std::vector<std::vector<T>> _image, double w, double h);
 
 const int h = 512;
 const int w = 512;

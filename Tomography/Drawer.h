@@ -35,8 +35,9 @@ public:
 	std::vector<std::vector<double>> GetMatr();
 	void SetMatrLog();
 	double angle_rotate;
+	bool is_angle;
 };
 
-void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& res, double angle);
+void RotateImage(std::vector<std::vector<double>> matr, std::vector<std::vector<double>>& res, double angle, bool is_angle);
 
-void InterpolationMatr(std::vector<std::vector<double>>& result, std::vector<std::vector<double>> _image, double w, double h);
+template<typename T> void InterpolationMatr(std::vector<std::vector<T>>& result, std::vector<std::vector<T>> _image, double w, double h);
